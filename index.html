@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Quiz App</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background: #eac7bd;
+        padding: 2rem;
+        margin: 0;
+        text-align: center;
+
+        transition: background 0.3s ease-in-out;
+      }
+      .login-box {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      input,
+      button {
+        margin: 0.5rem 0;
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+
+      select,
+      button {
+        padding: 0.5rem 1rem;
+        margin: 1rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+
+      .question-box {
+        background: white;
+        padding: 1.5rem;
+        margin: auto;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 10px;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      }
+
+      #timer {
+        font-size: 1.2rem;
+        color: red;
+        margin-bottom: 1rem;
+      }
+
+      /* Profile dropdown */
+      #profile-container {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+      }
+
+      #profile-icon {
+        font-size: 24px;
+        background: white;
+        padding: 10px;
+        border-radius: 50%;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
+
+      #dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 45px;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      #dropdown-menu button {
+        display: block;
+        width: 120px;
+        padding: 10px;
+        border: none;
+        background: white;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      #dropdown-menu button:hover {
+        background-color: #f0f0f0;
+      }
+
+      /* Background colors by category */
+      .dsa-bg {
+        background-color: #fff3e0; /* Light orange */
+      }
+      .cn-bg {
+        background-color: #e3f2fd; /* Light blue */
+      }
+      .dbms-bg {
+        background-color: #e8f5e9; /* Light green */
+      }
+      .oops-bg {
+        background-color: #f3e5f5; /* Light purple */
+      }
+
+      /* Option styling */
+      .options {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .option-box {
+        margin: 10px auto;
+        width: 90%;
+        max-width: 500px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+      }
+
+      .option-box:hover {
+        background-color: #eef6ff;
+        border-color: #3399ff;
+      }
+
+      .option-box input[type="radio"] {
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+      .option-box.selected {
+        background-color: #d1eaff; /* Light blue highlight */
+        font-weight: bold;
+        border: 2px solid #007bff;
+        color: #004085;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+      #progress-container {
+        background-color: #ddd;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 500px;
+        height: 20px;
+        margin: 1rem auto;
+        overflow: hidden;
+      }
+
+      #progress-bar {
+        background-color: #4caf50;
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease-in-out;
+      }
+      #startBtn {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      #startBtn:hover {
+        background-color: #0056b3;
+      }
+      #nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 1rem;
+      }
+      #prevBtn,
+      #nextBtn {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      #prevBtn:hover,
+      #nextBtn:hover {
+        background-color: #0056b3;
+      }
+      #dropdown-menu button:last-child {
+        color: #dc3545; /* red text */
+        font-weight: bold;
+      }
+      .footer {
+        position: fixed; /* Stick to bottom */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+        color: #fff; /* white text for contrast */
+        padding: 10px 0;
+        font-size: 14px;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="profile-container">
+      <div id="profile-icon">👤</div>
+      <div id="dropdown-menu">
+        <button onclick="signup()">Sign Up</button>
+        <button onclick="login()">Login</button>
+        <button onclick="backToLogin()">🔙 Logout</button>
+        <!-- ✅ New button -->
+      </div>
+    </div>
+
+    <h1>Interview Preparation Quiz</h1>
+    <h3 id="user-info" style="margin-bottom: 1rem; color: #444"></h3>
+
+    <label for="category">Choose a topic:</label>
+    <select id="category">
+      <option value="dsa">DSA</option>
+      <option value="cn">Computer Networks</option>
+      <option value="dbms">DBMS</option>
+
+      <option value="oops">OOPs</option>
+    </select>
+    <button id="startBtn">Start Quiz</button>
+
+    <div id="quiz-container" class="question-box" style="display: none">
+      <div id="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+
+      <p id="timer">⏰ Time left: 30s</p>
+      <!-- ✅ Timer element -->
+      <h2 id="question"></h2>
+      <div id="options" class="options"></div>
+      <div id="nav-buttons">
+        <button id="prevBtn">⬅ Previous</button>
+        <button id="nextBtn">Next ➡</button>
+      </div>
+    </div>
+    <div id="resultBox" class="question-box" style="display: none"></div>
+    <div id="userList" style="margin-top: 1rem; color: #333"></div>
+    <footer class="footer">© All copyrights reserved by Pranay</footer>
+
+    <script>
+      function backToLogin() {
+        sessionStorage.clear(); // Clear previous username and room
+        window.location.href = "login.html"; // Redirect to login
+      }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const profileIcon = document.getElementById("profile-icon");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+
+        // Toggle dropdown visibility
+        profileIcon.addEventListener("click", () => {
+          dropdownMenu.style.display =
+            dropdownMenu.style.display === "block" ? "none" : "block";
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener("click", (event) => {
+          if (
+            !profileIcon.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.style.display = "none";
+          }
+        });
+      });
+
+      function signup() {
+        alert("Redirecting to Sign Up page...");
+        // window.location.href = "signup.html";
+      }
+
+      function login() {
+        alert("Redirecting to Login page...");
+        // window.location.href = "login.html";
+      }
+    </script>
+    <script>
+      window.addEventListener("load", () => {
+        const user = sessionStorage.getItem("username");
+
+        if (!user) {
+          alert("Please login first.");
+          window.location.href = "login.html";
+        }
+        document.getElementById("user-info").textContent = `👤 ${user} `;
+      });
+    </script>
+    <script src="dsa.js"></script>
+    <script src="cn.js"></script>
+    <script src="dbms.js"></script>
+    <script src="oops.js"></script>
+    <script src="questions.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="socket.js"></script>
+    <script src="quiz.js"></script>
+  </body>
+</html>
